@@ -38,7 +38,7 @@ def decrypt_image(encrypted_dft, key):
     # Apply inverse DFT to get the decrypted image
     decrypted_image = cv2.idft(decrypted_dft, flags=cv2.DFT_SCALE | cv2.DFT_REAL_OUTPUT)
     t2 = datetime.now()
-    print("Encryption Time:", t2-t1)   
+    print("Decryption Time:", t2-t1)   
     
     return decrypted_image
 
