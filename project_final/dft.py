@@ -1,6 +1,8 @@
 import streamlit as st
 import cv2
 import numpy as np
+from datetime import datetime
+
 
 # Check if the session state feature is available in your Streamlit version
 if hasattr(st, 'session_state'):
@@ -13,6 +15,7 @@ else:
     st.error("Please upgrade to the latest version of Streamlit to use the session state feature.")
 
 def encrypt_image(image):
+    t1 = datetime.now()
     # Perform Discrete Fourier Transform (DFT)
     dft = cv2.dft(np.float32(image), flags=cv2.DFT_COMPLEX_OUTPUT)
     
@@ -21,15 +24,21 @@ def encrypt_image(image):
     
     # Element-wise multiplication with the key
     encrypted_dft = dft * key
+    t2 = datetime.now()
+    print("Encryption Time:", t2-t1)
     
     return encrypted_dft, key
 
 def decrypt_image(encrypted_dft, key):
+    t1 = datetime.now()
+    
     # Element-wise division with the key to retrieve the original DFT
     decrypted_dft = encrypted_dft / key
     
     # Apply inverse DFT to get the decrypted image
     decrypted_image = cv2.idft(decrypted_dft, flags=cv2.DFT_SCALE | cv2.DFT_REAL_OUTPUT)
+    t2 = datetime.now()
+    print("Encryption Time:", t2-t1)   
     
     return decrypted_image
 

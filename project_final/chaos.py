@@ -2,11 +2,15 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import io
+from datetime import datetime
+
 
 def logistic_map(r, x):
     return r * x * (1 - x)
 
 def chaotic_encryption(image, key, iterations=1000):
+    t1 = datetime.now()
+
     encrypted_image = np.zeros_like(image)
     np.random.seed(key)
     
@@ -18,9 +22,13 @@ def chaotic_encryption(image, key, iterations=1000):
         idx = np.random.permutation(len(image))  # Shuffle pixel indices
         encrypted_image = image[idx]  # Scramble pixel values based on shuffled indices
     
+    t2 = datetime.now()
+    print("Encryption Time:", t2-t1)
+    
     return encrypted_image
 
 def chaotic_decryption(encrypted_image, key, iterations=1000):
+    t1 = datetime.now()
     decrypted_image = np.zeros_like(encrypted_image)
     np.random.seed(key)
     
@@ -31,6 +39,8 @@ def chaotic_decryption(encrypted_image, key, iterations=1000):
         x = logistic_map(r, x)
         idx = np.argsort(np.random.permutation(len(encrypted_image)))  # Inverse shuffle pixel indices
         decrypted_image = encrypted_image[idx]  # Restore original pixel values based on inverse shuffled indices
+    t2 = datetime.now()
+    print("Decryption Time:", t2-t1)
     
     return decrypted_image
 
