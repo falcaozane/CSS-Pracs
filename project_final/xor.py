@@ -28,7 +28,7 @@ def decrypt_image(encrypted_image, key):
                 decrypted_image[row, column, depth] = encrypted_image[row, column, depth] ^ key[row, column, depth]
     return decrypted_image
 
-st.title('Image Encryption and Decryption')
+st.title('XOR Image Encryption and Decryption')
 
 uploaded_file = st.file_uploader("Choose an image...", type="jpg")
 if uploaded_file is not None:
