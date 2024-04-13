@@ -102,7 +102,7 @@ def xor_decrypt_image(encrypted_image, key):
 st.title('Image Encryption and Decryption')
 
 # Menu options
-menu = ["DFT", "Chaotic", "XOR"]
+menu = ["DFT", "Chaotic", "XOR", "Substitution and Permutation"]
 option = st.sidebar.selectbox("Choose an encryption algorithm:", menu)
 
 if option == "DFT":
@@ -155,3 +155,122 @@ elif option == "XOR":
                 st.image(decrypted_image, caption='Decrypted Image', use_column_width=True)
             else:
                 st.error('Please encrypt an image first before decrypting.')
+
+elif option == "Substitution and Permutation":
+    st.header("Substitution and Permutation Encryption and Decryption")
+    
+    def substitution_encrypt(image):
+        height, width = image.shape[:2]
+        encrypted_image = np.zeros((height, width), dtype=np.uint8)
+        lut = list(range(256))
+        random.shuffle(lut)
+        for i in range(height):
+            for j in range(width):
+                encrypted_image[i, j] = lut[image[i, j]]
+        return encrypted_image, lut
+
+    def substitution_decrypt(encrypted_image, lut):
+        height, width = encrypted_image.shape[:2]
+        decrypted_image = np.zeros((height, width), dtype=np.uint8)
+        lut_inverse = [0] * 256
+        for i, val in enumerate(lut):
+            lut_inverse[val] = i
+        for i in range(height):
+            for j in range(width):
+                decrypted_image[i, j] = lut_inverse[encrypted_image[i, j]]
+        return decrypted_image
+
+    def permutation_encrypt(image):
+        height, width = image.shape[:2]
+        indices = list(range(height * width))
+        random.shuffle(indices)
+        encrypted_image = np.zeros((height, width), dtype=np.uint8)
+        for i in range(height):
+            for j in range(width):
+                idx = indices[i * width + j]
+                encrypted_image[i, j] = image[idx // width, idx % width]
+        return encrypted_image, indices
+
+    def permutation_decrypt(encrypted_image, indices):
+        height, width = encrypted_image.shape[:2]
+        decrypted_image = np.zeros((height, width), dtype=np.uint8)
+        for i, idx in enumerate(indices):
+            decrypted_image[idx // width, idx % width] = encrypted_image[i // width, i % width]
+        return decrypted_image
+
+    uploaded_file = st.file_uploader("Upload image to encrypt/decrypt (PNG, JPEG)", type=["png", "jpg", "jpeg"])
+    if uploaded_file is not None:
+        file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+        original_image = cv2.imdecode(file_bytes, cv2.IMREAD_GRAYSCALE)
+        st.image(original_image, caption='Original Image', use_column_width=True)
+        if st.button('Encrypt'):
+            encrypted_substitution, lut = substitution_encrypt(original_image)
+            encrypted_permutation, indices = permutation_encrypt(original_image)
+            st.image(encrypted_substitution, caption='Encrypted Substitution', use_column_width=True)
+            st.image(encrypted_permutation, caption='Encrypted Permutation', use_column_width=True)
+        if st.button('Decrypt'):
+            decrypted_substitution = substitution_decrypt(encrypted_substitution, lut)
+            decrypted_permutation = permutation_decrypt(encrypted_permutation, indices)
+            st.image(decrypted_substitution, caption='Decrypted Substitution', use_column_width=True)
+            st.image(decrypted_permutation, caption='Decrypted Permutation', use_column_width=True)
+elif option == "Substitution and Permutation":
+    st.header("Substitution and Permutation Encryption and Decryption")
+    
+    def substitution_encrypt(image):
+        height, width = image.shape[:2]
+        encrypted_image = np.zeros((height, width), dtype=np.uint8)
+        lut = list(range(256))
+        random.shuffle(lut)
+        for i in range(height):
+            for j in range(width):
+                encrypted_image[i, j] = lut[image[i, j]]
+        return encrypted_image, lut
+
+    def substitution_decrypt(encrypted_image, lut):
+        height, width = encrypted_image.shape[:2]
+        decrypted_image = np.zeros((height, width), dtype=np.uint8)
+        lut_inverse = [0] * 256
+        for i, val in enumerate(lut):
+            lut_inverse[val] = i
+        for i in range(height):
+            for j in range(width):
+                decrypted_image[i, j] = lut_inverse[encrypted_image[i, j]]
+        return decrypted_image
+
+    def permutation_encrypt(image):
+        height, width = image.shape[:2]
+        indices = list(range(height * width))
+        random.shuffle(indices)
+        encrypted_image = np.zeros((height, width), dtype=np.uint8)
+        for i in range(height):
+            for j in range(width):
+                idx = indices[i * width + j]
+                encrypted_image[i, j] = image[idx // width, idx % width]
+        return encrypted_image, indices
+
+    def permutation_decrypt(encrypted_image, indices):
+        height, width = encrypted_image.shape[:2]
+        decrypted_image = np.zeros((height, width), dtype=np.uint8)
+        for i, idx in enumerate(indices):
+            decrypted_image[idx // width, idx % width] = encrypted_image[i // width, i % width]
+        return decrypted_image
+
+    uploaded_file = st.file_uploader("Upload image to encrypt/decrypt (PNG, JPEG)", type=["png", "jpg", "jpeg"])
+    if uploaded_file is not None:
+        file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+        original_image = cv2.imdecode(file_bytes, cv2.IMREAD_GRAYSCALE)
+        st.image(original_image, caption='Original Image', use_column_width=True)
+        if st.button('Encrypt'):
+            encrypted_substitution, lut = substitution_encrypt(original_image)
+            encrypted_permutation, indices = permutation_encrypt(original_image)
+            st.image(encrypted_substitution, caption='Encrypted Substitution', use_column_width=True)
+            st.image(encrypted_permutation, caption='Encrypted Permutation', use_column_width=True)
+        if st.button('Decrypt'):
+            decrypted_substitution = substitution_decrypt(encrypted_substitution, lut)
+            decrypted_permutation = permutation_decrypt(encrypted_permutation, indices)
+            st.image(decrypted_substitution, caption='Decrypted Substitution', use_column_width=True)
+            st.image(decrypted_permutation, caption='Decrypted Permutation', use_column_width=True)
+else:
+    st.error("Invalid option selected. Please choose a valid encryption algorithm from the menu.")
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("Developed by [Your Name]")
