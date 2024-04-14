@@ -3,8 +3,11 @@ import numpy as np
 import random
 import streamlit as st
 import matplotlib.pyplot as plt
+from datetime import datetime
+
 
 def substitution_encrypt(image):
+    t1 = datetime.now()
     height, width = image.shape[:2]
     encrypted_image = np.zeros((height, width), dtype=np.uint8)
     lut = list(range(256))
@@ -12,9 +15,12 @@ def substitution_encrypt(image):
     for i in range(height):
         for j in range(width):
             encrypted_image[i, j] = lut[image[i, j]]
+    t2 = datetime.now()
+    print("Substitution Encryption Time:", t2-t1)
     return encrypted_image, lut
 
 def substitution_decrypt(encrypted_image, lut):
+    t1 = datetime.now()
     height, width = encrypted_image.shape[:2]
     decrypted_image = np.zeros((height, width), dtype=np.uint8)
     lut_inverse = [0] * 256
@@ -23,9 +29,12 @@ def substitution_decrypt(encrypted_image, lut):
     for i in range(height):
         for j in range(width):
             decrypted_image[i, j] = lut_inverse[encrypted_image[i, j]]
+    t2 = datetime.now()
+    print("Substitution Decryption Time:", t2-t1)
     return decrypted_image
 
 def permutation_encrypt(image):
+    t1 = datetime.now()
     height, width = image.shape[:2]
     indices = list(range(height * width))
     random.shuffle(indices)
@@ -34,13 +43,18 @@ def permutation_encrypt(image):
         for j in range(width):
             idx = indices[i * width + j]
             encrypted_image[i, j] = image[idx // width, idx % width]
+    t2 = datetime.now()
+    print("Permutation Encryption Time:", t2-t1)
     return encrypted_image, indices
 
 def permutation_decrypt(encrypted_image, indices):
+    t1 = datetime.now()
     height, width = encrypted_image.shape[:2]
     decrypted_image = np.zeros((height, width), dtype=np.uint8)
     for i, idx in enumerate(indices):
         decrypted_image[idx // width, idx % width] = encrypted_image[i // width, i % width]
+    t2 = datetime.now()
+    print("Permutation Decryption Time:", t2-t1)
     return decrypted_image
 
 def main():
